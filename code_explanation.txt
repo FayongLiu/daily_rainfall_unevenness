@@ -1,0 +1,43 @@
+extract_precipitation_daily_CRUJRA.sh：计算CRU每年逐日降水
+
+All_data_cal_concat.py：合并CRU/ERA5 s/d/r变量，CMIP6计算所有模型相同变量的均值，再合并一个文件
+
+CMIP6_cal_mask_resample_d_mean_slope.py/CMIP6_cal_mask_resample_s_mean_slope.py/CMIP6_cal_mask_resample_r_mean_slope.py：计算s/d/r全年的mean值和时间序列趋势；输出按网格和按面积文件
+
+CMIP6_cal_r_rmax.py：计算cmip6所有文件r变量
+
+CMIP6_concat_all_year_d.py/CMIP6_concat_all_year_s.py：把每个模型逐年s/d合并一个文件
+
+CRU_cal_s_d.py/ERA5_cal_s_d.py：计算s/d变量
+
+CRU_cal_s_d_mean_slope.py/ERA5_cal_s_d_mean_slope.py：计算s/d全年的mean值和时间序列趋势；输出按网格和按面积文件
+
+CRU_cal_r_mean_slope.py/ERA5_cal_r_mean_slope.py：计算r全年的mean值和时间序列趋势；输出按网格和按面积文件
+
+STATION_cal_d_s_r_and_mean_trend.py：计算站点的s/d/r变量以及全年的mean值和时间序列趋势
+
+plot_v6_fig1_isd_8fig_mean_trend.py：画主图1，站点s/d/r变量空间分布图，显著趋势分类下的 UI mean，UI mean与UI slope趋势图
+
+plot_v6_fig2_datas_3map_3corr_mean.py：画主图2，模型UI mean空间分布，各模型与isd相关分析散点图
+
+plot_v6_fig3_datas_3map_3corr_trend.py：画主图3，模型UI slope空间分布，各模型与isd相关分析散点图，以及所有数据集每年UI mean的时间序列趋势
+
+plot_v6_fig4_regional_daily_grids.py：画主图4，4个数据集显著分类各个变量统计柱状图，输入网格文件
+
+plot_v6_figS1_4datas_bar.py：画附件图1
+
+plot_v6_figS2_and_figS3_hypo.py：画附件图2和图3
+
+plot_v6_figS4_12hypo_prei_bar_and_line.py：画附件图4
+
+plot_v6_figS5_12hypo_re_bar.py：画附件图5
+
+plot_v6_figS6_station_6map_monthly.py：画附件图6
+
+plot_v6_figS7_datas_3map_3corr_monthly.py：画附件图7
+
+plot_v6_figS8_cmip6_muti_map.py：画附件图8
+
+plot_v6_figS9_cmip6_muti_slope.py：画附件图9
+
+plot_v6_figS10_regional_daily_weight_area.py：画附件图10
