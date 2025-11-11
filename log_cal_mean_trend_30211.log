@@ -1,0 +1,294 @@
+2025年 11月 11日 星期二 23:16:06 CST
+Process ACCESS-CM2_day
+Process ACCESS-ESM1-5_day
+Process AWI-ESM-1-1-LR_day
+Process AWI-ESM-1-REcoM_day
+Process BCC-ESM1
+Process CanESM5_day
+Process CESM2-FV2_day
+Process CESM2-WACCM-FV2_day
+Process CESM2-WACCM_day
+Process CESM2
+Process CMCC-CM2-HR4_day
+Process CMCC-CM2-SR5_day
+Process CMCC-ESM2_day
+Process EC-Earth3-CC_day
+Process FGOALS-g3_day
+Process GISS-E2-2-G_day
+Process IITM-ESM_day
+Process MIROC6_day
+Process MPI-ESM-1-2-HAM_day
+Process MPI-ESM1-2-HR_day
+Process MPI-ESM1-2-LR_day
+Process NorCPM1
+Process NorESM2-LM_day
+Process NorESM2-MM_day
+Process SAM0-UNICON_day
+Process CRU_JRA
+Process ERA5_Land
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc fileFinish concatenating all nc file
+
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Finish concatenating all nc file
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Finish concatenating all nc file
+Calculate mean and trend of S_daily
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of S_monthly
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of D_monthly
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of rain_day
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of PRCP_ratio
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Finish calculating mean and trend
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Saving ../data/mean_trend/2000_2020_gte15/grid_EC-Earth3-CC_day.nc
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Calculate mean and trend of rain_day_0p1
+Finish calculating mean and trend
+Finish calculating mean and trend
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_IITM-ESM_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_CanESM5_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_BCC-ESM1.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_NorCPM1.nc
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_ACCESS-CM2_day.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_CMCC-CM2-HR4_day.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_MIROC6_day.nc
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_MPI-ESM1-2-LR_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_SAM0-UNICON_day.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_AWI-ESM-1-1-LR_day.nc
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_NorESM2-LM_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_AWI-ESM-1-REcoM_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_CESM2.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_GISS-E2-2-G_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_MPI-ESM-1-2-HAM_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_CESM2-WACCM_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_ACCESS-ESM1-5_day.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_FGOALS-g3_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_NorESM2-MM_day.nc
+Finish calculating mean and trend
+Finish calculating mean and trend
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_CESM2-WACCM-FV2_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_MPI-ESM1-2-HR_day.nc
+Saving ../data/mean_trend/2000_2020_gte15/grid_CMCC-CM2-SR5_day.nc
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_CESM2-FV2_day.nc
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_CMCC-ESM2_day.nc
+Calculate mean and trend of rain_day_0p1
+Finish calculating mean and trend
+Saving ../data/mean_trend/2000_2020_gte15/grid_CRU_JRA.nc
+Calculate mean and trend of S_monthly
+Calculate mean and trend of D_daily
+Calculate mean and trend of D_monthly
+Calculate mean and trend of PRCP_ratio
