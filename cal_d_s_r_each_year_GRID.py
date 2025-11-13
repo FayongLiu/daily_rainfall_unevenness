@@ -66,6 +66,9 @@ def cal_D_S_Ratio(ds, Rmax):
     D_monthly = D_monthly.where(valid_mask, np.nan)
     S_monthly = D_monthly * PRCP_ratio
     S_monthly = S_monthly.where(valid_mask, np.nan)
+    
+    rain_day = rain_day.where(valid_mask, np.nan)
+    rain_day_0p1 = rain_day_0p1.where(valid_mask, np.nan)
 
     del prcp, R, valid_mask, rain_mask, rain_mask_0p1, annual_rain_gt0_mask, m, q, pi
     gc.collect()

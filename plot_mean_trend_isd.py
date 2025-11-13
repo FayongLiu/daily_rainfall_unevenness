@@ -9,6 +9,7 @@ import matplotlib.ticker as ticker
 from scipy.stats import linregress, shapiro, levene, ttest_ind, ttest_rel, mannwhitneyu, wilcoxon
 import geopandas as gpd
 import seaborn as sns
+import time
 from pre_isd_select_valid_station import START_YEAR, END_YEAR, TH_YEAR
 
 
@@ -311,8 +312,8 @@ def plot_mean_trend_rain_day_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_p
 
 def main():
     # load data
-    CSV_PATH = rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/station_isd.csv'
-    df = pd.read_csv(CSV_PATH)
+    isd_path = rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/station_isd.csv'
+    isd = pd.read_csv(isd_path)
     shp = r'../data/global_coastline_110m/global_coastline_110m.shp'
     gdf = gpd.read_file(shp)
 
@@ -326,12 +327,12 @@ def main():
                  '(g) UI mean in different regions (ISD)', '(h) Relationship between UI mean and UI trend (ISD)']
     outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/mean_trend_S_D_PRCP_ratio_daily_isd.png'
     cbar_prop = [0.03, 0.01]
-    plot_mean_trend_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
+    plot_mean_trend_isd(isd, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
 
     # monthly scale
     varname_ls_monthly = [varname.replace('daily', 'monthly') for varname in varname_ls]
     outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/mean_trend_S_D_PRCP_ratio_monthly_isd.png'
-    plot_mean_trend_isd(df, varname_ls_monthly, fignum_ls, gdf, outpath, cbar_prop)
+    plot_mean_trend_isd(isd, varname_ls_monthly, fignum_ls, gdf, outpath, cbar_prop)
 
     # # 2000-2020, daily scale
     # varname_ls_2000 = [f'{varname}_post_2000' for varname in varname_ls]
@@ -345,12 +346,12 @@ def main():
                  '(b) Trend of rainy days (ISD)']
     outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/mean_trend_rain_day_isd.png'
     cbar_prop = [0.06, 0.02]
-    plot_mean_trend_rain_day_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
+    plot_mean_trend_rain_day_isd(isd, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
 
     # daily scale, rainy day, > 0.1 mm
     varname_ls = ['rain_day_0p1_mean', 'rain_day_0p1_trend']
     outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/mean_trend_rain_day_0p1_isd.png'
-    plot_mean_trend_rain_day_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
+    plot_mean_trend_rain_day_isd(isd, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
     # varname_ls = ['rain_day_mean', 'rain_day_trend',
     #               'rain_day_mean_post_2000', 'rain_day_trend_post_2000']
     # fignum_ls = ['(a) Mean rainy days (ISD, 1980-2020)',
@@ -371,4 +372,11 @@ def main():
 
 
 if __name__ == "__main__":
+    t1 = time.time()
     main()
+    t2 = time.time()
+    running_time = t2 - t1
+    hours = int(running_time // 3600)
+    minutes = int((running_time % 3600) // 60)
+    seconds = int(running_time % 60)
+    print(f"Running time: {hours} h, {minutes} min, {seconds} s")

@@ -103,7 +103,7 @@ def cal_mean_trend_GRID(data_name):
     result_ds.to_netcdf(outpath)
     print(f'Saving {outpath}')
 
-    del ds_ls, all_ds, var_ds, valid_mask, mean_trend, result_ds
+    del ds_ls, all_ds, mean_trend, result_ds
     gc.collect()
 
     return

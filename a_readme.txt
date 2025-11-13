@@ -13,5 +13,10 @@ pre_GRID_cal_maximum_annual_prcp.py/.sh
 
 
 2. calulate R/Rmax (ratio), RE(d), UI(s) and their multi-year mean and trend
-cal_d_s_r_mean_trend_xxx.py
-cal_d_s_r_each_year_GRID.py/.sh
+cal_d_s_r_xxx.py/.sh
+
+3. cal statistics for significant changes percentage
+cal_stats_significant_changes.py
+
+4. visualization
+plot_xxx.py

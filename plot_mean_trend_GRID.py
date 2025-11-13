@@ -6,16 +6,20 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib import ticker
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
-from plot_mean_trend_s_d_r_isd import adjust_axis_label, add_fignum, significance_test
+import time
+import seaborn as sns
+from scipy.stats import linregress
+from plot_mean_trend_isd import adjust_axis_label, add_fignum, significance_test
+from pre_GRID_cal_maximum_annual_prcp import model_ls
+from pre_isd_select_valid_station import START_YEAR, END_YEAR, TH_YEAR
 
 
 # function to plot distribution of grid-based dataset
-def plot_distribution_GRID(fig, axname, ds, varname, fignum):
+def plot_distribution_GRID(fig, axname, ds, varname, fignum, cbar_prop):
     # basic set
     mean_clr = [
-        #        "#D6D6D6",
-        #        "#EDE8E0",
-        "#FFFFFF",
+        "#D6D6D6",
+        "#EDE8E0",
         "#FFF8E6",
         "#FAEBD7",
         "#FFE4B5",
@@ -44,8 +48,8 @@ def plot_distribution_GRID(fig, axname, ds, varname, fignum):
     # plot distribution
     var_1d = var.values.flatten()
     var_1d = var_1d[~np.isnan(var_1d)]
-    vmin = np.percentile(var_1d, 1)
-    vmax = np.percentile(var_1d, 99)
+    vmin = np.percentile(var_1d, 5)
+    vmax = np.percentile(var_1d, 95)
     vcenter = 0 if 'trend' in varname else (vmin + vmax) / 2
     norm = TwoSlopeNorm(vmin=vmin, vcenter=vcenter, vmax=vmax)
     im = var.plot(ax=axname, cmap=cmap, norm=norm, add_colorbar=False)
@@ -53,7 +57,7 @@ def plot_distribution_GRID(fig, axname, ds, varname, fignum):
     ax_pos = axname.get_position()
     left_loc, bottom_loc = ax_pos.get_points()[0]
     right_loc, top_loc = ax_pos.get_points()[1]
-    cbar_ax = fig.add_axes([left_loc+0.05, bottom_loc - 0.04, right_loc - left_loc-0.1, 0.01])
+    cbar_ax = fig.add_axes([left_loc + 0.05, bottom_loc - cbar_prop[0], right_loc - left_loc - 0.1, cbar_prop[1]])
     cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal', extend='both')
     cbar.ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
 
@@ -81,10 +85,10 @@ def plot_distribution_GRID(fig, axname, ds, varname, fignum):
 # function to  calculate weighted std
 def weighted_std(values, weights):
     average = np.average(values, weights=weights)
-    variance = np.average((values - average)**2, weights=weights)
-    
+    variance = np.average((values - average) ** 2, weights=weights)
+
     return np.sqrt(variance)
-    
+
 
 # function to plot scatter between isd and grid-based data
 def plot_scatter(axname, isd, grid, area, varname, fignum):
@@ -149,92 +153,160 @@ def plot_scatter(axname, isd, grid, area, varname, fignum):
 # function to rename varname
 def rename(varname):
     if 'S_' in varname:
-        new_varname = 'UI'
+        title_varname = 'UI'
     elif 'D_' in varname:
-        new_varname = 'RE'
+        title_varname = 'RE'
     elif 'PRCP_ratio_' in varname:
-        new_varname = 'R/Rmax'
+        title_varname = 'R/Rmax'
     elif 'rain_day_' in varname:
-        new_varname = 'rainy days'
+        title_varname = 'rainy days'
     else:
         print(f'Current varname: {varname}, no matched variable!')
-    return new_varname
+    return title_varname
 
 
 # function to plot mean and trend of GRID-based dataset
-def plot_mean_trend_GRID(ds_ls, isd, area_ls, varname, global_ls=None):
-    new_varname = rename(varname)
+def plot_mean_trend_GRID(ds_ls, isd, area_ls, varname, global_ls=None, is_global_average=1):
+    title_varname = rename(varname)
     if 'trend' in varname:
         fig = plt.figure(figsize=(9, 12), dpi=300)
-        grid = GridSpec(4, 3, figure=fig, left=0.07, bottom=0.07, right=0.91, top=0.97, wspace=0.1, hspace=0.5)
-        ax1 = plt.subplot(grid[0, 0:3])
+        grid = GridSpec(4, 3, figure=fig, left=0.08, bottom=0.07, right=0.91, top=0.98, wspace=0.1, hspace=0.5)
+        ax_global = plt.subplot(grid[0, 0:3])
         ax_ls1 = [plt.subplot(grid[i + 1, 0:2]) for i in range(3)]
         ax_ls2 = [plt.subplot(grid[i + 1, 2]) for i in range(3)]
-        fignum_ls1 = [f'(b) Trend of {new_varname} (CRU-JRA)',
-                      f'(c) Trend of {new_varname} (ERA5-Land)',
-                      f'(d) Trend of {new_varname} (CMIP6 ensembles)']
+        fignum_ls1 = [f'(b) Trend of {title_varname} (CRU-JRA)',
+                      f'(c) Trend of {title_varname} (ERA5-Land)',
+                      f'(d) Trend of {title_varname} (CMIP6 ensembles)']
         fignum_ls2 = ['(e) CRU-JRA vs. ISD',
                       '(f) ERA5-Land vs. ISD',
                       '(g) CMIP6 ensembles vs. ISD']
         outname = varname.replace('_trend', '')
         outname = f'trend_{outname}'
+        cbar_prop = [0.04, 0.01]
     else:
         fig = plt.figure(figsize=(9, 9), dpi=300)
-        grid = GridSpec(3, 3, figure=fig, left=0.06, bottom=0.09, right=0.91, top=0.97, wspace=0.1, hspace=0.5)
+        grid = GridSpec(3, 3, figure=fig, left=0.06, bottom=0.08, right=0.91, top=0.97, wspace=0.1, hspace=0.5)
         ax_ls1 = [plt.subplot(grid[i, 0:2]) for i in range(3)]
         ax_ls2 = [plt.subplot(grid[i, 2]) for i in range(3)]
-        fignum_ls1 = [f'(a) Mean of {new_varname} (CRU-JRA)',
-                      f'(b) Mean of {new_varname} (ERA5-Land)',
-                      f'(c) Mean of {new_varname} (CMIP6 ensembles)']
+        fignum_ls1 = [f'(a) Mean of {title_varname} (CRU-JRA)',
+                      f'(b) Mean of {title_varname} (ERA5-Land)',
+                      f'(c) Mean of {title_varname} (CMIP6 ensembles)']
         fignum_ls2 = ['(d) CRU-JRA vs. ISD',
                       '(e) ERA5-Land vs. ISD',
                       '(f) CMIP6 ensembles vs. ISD']
         outname = varname.replace('_mean', '')
         outname = f'mean_{outname}'
+        cbar_prop = [0.05, 0.012]
 
     for i in range(3):
         # plot distribution
-        plot_distribution_GRID(fig, ax_ls1[i], ds_ls[i], varname, fignum_ls1[i])
+        plot_distribution_GRID(fig, ax_ls1[i], ds_ls[i], varname, fignum_ls1[i], cbar_prop)
         # plot scatter
         plot_scatter(ax_ls2[i], isd, ds_ls[i], area_ls[i], varname, fignum_ls2[i])
 
     # if trend, plot trend at global scale
+    if global_ls is not None:
+        clr_ls = ['#EAB080', '#7C9D97', '#9CB0C3', '#C9C9C9']
+        dataname_ls = ['ISD', 'CRU-JRA', 'ERA5-Land', 'CMIP6 ensembles']
+        df_varname = varname.replace('_trend', '')
+        if not is_global_average:
+            df_varname = f'{df_varname}_station'
+        slope_ls = []
+        p_ls = []
+        for i, df in enumerate(global_ls):
+            axname = ax_global
+            if i <= 3:
+                if i == 0:
+                    df_varname = varname.replace('_trend', '')
+                axname.plot(df['year'].values, df[df_varname].values, linestyle='-', linewidth=1.5, color=clr_ls[i], alpha=0.8)
+                sns.regplot(x=df['year'].values, y=df[df_varname].values, ci=95, marker='o', color=clr_ls[i], ax=axname)
+                slope, _, _, p_value, _ = linregress(df['year'].values, df[df_varname].values)
+                slope_ls.append(slope)
+                p_ls.append(p_value)
+            else:
+                axname.plot(df['year'].values, df[df_varname].values, linestyle='--', linewidth=1.5, color=clr_ls[-1], alpha=0.5)
+        axname.set_ylabel('Global averaged UI')
+        axname.set_xlabel('')
+        axname.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5))
+        # adjust location
+        pos = axname.get_position()
+        offset = 0.03
+        new_pos = [pos.x0, pos.y0 - offset, pos.width, pos.height + offset]
+        axname.set_position(new_pos)
+        # add slope and p value
+        xlim = axname.get_xlim()
+        ylim = axname.get_ylim()
+        xloc = xlim[0] + 0.55 * (xlim[1] - xlim[0])
+        for i in range(4):
+            yloc = ylim[0] + 0.12 * (ylim[1] - ylim[0]) + 0.08 * i * (ylim[1] - ylim[0])
+            txt = f'{dataname_ls[i]}: slope = {slope_ls[i]*1000:.2f} kyr$^-$$^1$, $p$ = {p_ls[i]:.2f}'
+            axname.text(xloc, yloc, txt, color=clr_ls[i], va='bottom', ha='left')
+        add_fignum(axname, '(a) Changes in global averaged UI')
 
     # save result
-    outpath = rf'../fig/{outname}_grid.png'
+    averaged_name = '' if is_global_average else '_averaged_by_stations'
+    outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/{outname}_grid{averaged_name}.png'
     plt.savefig(outpath, dpi=300)
     print(f'Saving {outpath}')
+    plt.close()
 
     return
 
 
 def main():
     # load data
-    isd_path = r'../data/mean_trend/mean_trend_station_isd.csv'
+    # at each station or grid
+    isd_path = rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/station_isd.csv'
     isd = pd.read_csv(isd_path)
     gridname_ls = ['CRU_JRA', 'ERA5_Land', 'CMIP6_ensembles']
-    gridpath_ls = [rf'../data/mean_trend/mean_trend_grid_{gridname}.nc' for gridname in gridname_ls]
+    gridpath_ls = [rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/grid_{gridname}.nc' for gridname in gridname_ls]
     ds_ls = [xr.open_dataset(gridpath) for gridpath in gridpath_ls]
     areapath_ls = [rf'../data/mask/area_mask_{gridname}.nc' for gridname in gridname_ls[:2]]
     area_ls = [xr.open_dataset(areapath) for areapath in areapath_ls]
     area_ls = [area_ls[0], area_ls[1], area_ls[0]]
+    # at global scael
+    globalname_ls = ['isd', 'CRU_JRA', 'ERA5_Land', 'CMIP6_ensembles'] + model_ls
+    globalpath_ls = [rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/global_{globalname}.csv' for globalname in globalname_ls]
+    global_ls = [pd.read_csv(globalpath) for globalpath in globalpath_ls]
+
     varnames = ['S', 'D', 'PRCP_ratio', 'rain_day', 'rain_day_0p1']
     varname_ls = []
+    # for i, varname in enumerate(varnames):
+    #     for idx in ['mean', 'trend']:
+    #         for period in ['', '_post_2000']:
+    #             if i <= 1:
+    #                 for scale in ['daily', 'monthly']:
+    #                     tempt = f'{varname}_{scale}_{idx}{period}'
+    #                     varname_ls.append(tempt)
+    #             else:
+    #                 tempt = f'{varname}_{idx}{period}'
+    #                 varname_ls.append(tempt)
     for i, varname in enumerate(varnames):
-            for idx in ['mean', 'trend']:
-                for period in ['', '_post_2000']:
-                    if i <= 1:
-                        for scale in ['daily', 'monthly']:
-                            tempt = f'{varname}_{scale}_{idx}{period}'
-                            varname_ls.append(tempt)
-                    else:
-                        tempt = f'{varname}_{idx}{period}'
-                        varname_ls.append(tempt)
+        for idx in ['mean', 'trend']:
+            if i <= 1:
+                for scale in ['daily', 'monthly']:
+                    tempt = f'{varname}_{scale}_{idx}'
+                    varname_ls.append(tempt)
+            else:
+                tempt = f'{varname}_{idx}'
+                varname_ls.append(tempt)
 
-    plot_mean_trend_GRID(ds_ls, isd, area_ls, 'S_daily_trend', global_ls=None)
+    for varname in varname_ls:
+        if 'trend' in varname:
+            for is_global_average in range(2):
+                plot_mean_trend_GRID(ds_ls, isd, area_ls, varname, global_ls, is_global_average)
+        else:
+            plot_mean_trend_GRID(ds_ls, isd, area_ls, varname)
 
     return
 
 
 if __name__ == "__main__":
+    t1 = time.time()
     main()
+    t2 = time.time()
+    running_time = t2 - t1
+    hours = int(running_time // 3600)
+    minutes = int((running_time % 3600) // 60)
+    seconds = int(running_time % 60)
+    print(f"Running time: {hours} h, {minutes} min, {seconds} s")
