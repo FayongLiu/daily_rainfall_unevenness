@@ -29,6 +29,7 @@ def cal_D_S_Ratio(ds, Rmax):
         prcp = ds['pr'] * 86400  # convet unit to mm day-1
     else:
         raise KeyError("Dataset does not contain 'tp' or 'pre' variable")
+    prcp = xr.where(prcp < 0.1, 0, prcp)
     prcp = prcp.where(prcp >= 0, np.nan)
     R = prcp.sum(dim='time', skipna=True)  # Total prcp for each grid point
     valid_mask = prcp.count(dim='time')
@@ -38,8 +39,6 @@ def cal_D_S_Ratio(ds, Rmax):
     # cal daily UI
     rain_mask = prcp > 0
     rain_day = rain_mask.sum(dim='time')
-    rain_mask_0p1 = prcp > 0.1
-    rain_day_0p1 = rain_mask_0p1.sum(dim='time')
     m = prcp.count(dim='time')  # Number of not nan values at time dimension
     q = 1 / m  # Average proportion q
     # Avoid division by zero
@@ -66,14 +65,13 @@ def cal_D_S_Ratio(ds, Rmax):
     D_monthly = D_monthly.where(valid_mask, np.nan)
     S_monthly = D_monthly * PRCP_ratio
     S_monthly = S_monthly.where(valid_mask, np.nan)
-    
-    rain_day = rain_day.where(valid_mask, np.nan)
-    rain_day_0p1 = rain_day_0p1.where(valid_mask, np.nan)
 
-    del prcp, R, valid_mask, rain_mask, rain_mask_0p1, annual_rain_gt0_mask, m, q, pi
+    rain_day = rain_day.where(valid_mask, np.nan)
+
+    del prcp, R, valid_mask, rain_mask, annual_rain_gt0_mask, m, q, pi
     gc.collect()
 
-    return S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day, rain_day_0p1
+    return S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day
 
 
 # function to process a single NetCDF file and save results
@@ -98,7 +96,7 @@ def process_and_save(file_path, output_dir, Rmax):
     ds = ds.sortby('lon').sortby('lat')
 
     # Compute daily and monthly seasonality indices
-    S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day, rain_day_0p1 = cal_D_S_Ratio(ds, Rmax)
+    S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day = cal_D_S_Ratio(ds, Rmax)
 
     # Add time info
     match = re.search(r'\d{4}', os.path.basename(file_path))
@@ -106,10 +104,10 @@ def process_and_save(file_path, output_dir, Rmax):
     time_info = xr.DataArray([year], dims=["time"], coords={"time": [year]}, name="time")
 
     # List of variables to expand
-    variables = [S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day, rain_day_0p1]
+    variables = [S_daily, S_monthly, D_daily, D_monthly, PRCP_ratio, rain_day]
     expanded_vars = {name: var.expand_dims(dim='time').assign_coords(time=time_info)
                      for name, var in
-                     zip(['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day', 'rain_day_0p1'],
+                     zip(['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day'],
                          variables)}
 
     # Combine results into a new Dataset
@@ -168,7 +166,7 @@ def process_files_in_parallel(input_dir, dataname, num_workers=10):
 # Main function
 if __name__ == "__main__":
     t1 = time.time()
-    
+
     # CMIP6 models
     data_dir = r'/data1/jzzhou/precipitation/season/cmip6/'
     for model in model_ls:
@@ -177,12 +175,12 @@ if __name__ == "__main__":
 
     # CRU JRA
     input_dir = r"/data1/yyzhao/data/CRU-JRA/pre/"
-    process_files_in_parallel(input_dir, 'CRU_JRA', num_workers=10)
+    process_files_in_parallel(input_dir, 'CRU_JRA', num_workers=21)
 
     # ERA5_Land
     input_dir = r"/data1/share/ERA5_land/precipitation/daily/"
-    process_files_in_parallel(input_dir, 'ERA5_Land', num_workers=3)
-    
+    process_files_in_parallel(input_dir, 'ERA5_Land', num_workers=4)
+
     t2 = time.time()
     running_time = t2 - t1
     hours = int(running_time // 3600)

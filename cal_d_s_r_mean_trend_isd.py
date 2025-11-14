@@ -32,6 +32,8 @@ def cal_max_prep(in_dir, out_path):
         for station in valid_station:
             filepath = os.path.join(in_dir, station)
             df = pd.read_csv(filepath)
+            # ignore rianfall less than 0.1 mm
+            df.loc[df['PRCP'] < 0.1, 'PRCP'] = 0
             annual_R = df.groupby(df['year'])['PRCP'].sum().dropna()
             if not annual_R.empty:
                 max_prcp = max(max_prcp, annual_R.max())
@@ -46,6 +48,7 @@ def cal_max_prep(in_dir, out_path):
 def cal_D_S_Ratio(in_dir, station, max_prcp, out_dir):
     filepath = os.path.join(in_dir, station)
     df = pd.read_csv(filepath)
+    df.loc[df['PRCP'] < 0.1, 'PRCP'] = 0
     df['DATE'] = pd.to_datetime(df['DATE'], errors='coerce')
     grouped = df.groupby('year')
     results = []
@@ -55,17 +58,14 @@ def cal_D_S_Ratio(in_dir, station, max_prcp, out_dir):
         R = prcp.sum()
         # cal index
         frequency_daily = len(prcp[prcp > 0])
-        frequency_daily_0p1 = len(prcp[prcp > 0.1])
         m_daily = len(prcp.dropna())
         prep_monthly = group.resample('ME', on='DATE')['PRCP'].sum()
-        frequency_monthly = len(prep_monthly[prep_monthly > 0])
-        frequency_monthly_0p1 = len(prep_monthly[prep_monthly > 0.1])
         m_monthly = len(prep_monthly.dropna())
         if R == 0:
             D_daily = S_daily = 0
             D_monthly = S_monthly = 0
             PRCP_ratio = 0
-            frequency_daily = frequency_monthly = 0
+            frequency_daily = 0
         else:
             # daily
             q_daily = 1 / m_daily
@@ -81,8 +81,7 @@ def cal_D_S_Ratio(in_dir, station, max_prcp, out_dir):
 
         # add result
         results.append({
-            'station': station,
-            'name': group['NAME'].iloc[0],
+            'station': station.replace('.csv', ''),
             'lon': group['LONGITUDE'].iloc[0],
             'lat': group['LATITUDE'].iloc[0],
             'year': year,
@@ -93,11 +92,7 @@ def cal_D_S_Ratio(in_dir, station, max_prcp, out_dir):
             'Annual_PRCP_mm': R,
             'PRCP_ratio': PRCP_ratio,
             'valid_day': m_daily,
-            'rain_day': frequency_daily,
-            'rain_day_0p1': frequency_daily_0p1,
-            'valid_month': m_monthly,
-            'rain_month': frequency_monthly,
-            'rain_month_0p1': frequency_monthly_0p1
+            'rain_day': frequency_daily
         })
 
     # save result
@@ -113,26 +108,16 @@ def calculate_mean_trend(df):
     valid_df = df.dropna()
     # calculate multi-year mean
     col_ls = valid_df.columns
-    station_df = valid_df[col_ls[:4]].iloc[0]
-    mean_col_ls = [f'{col}_mean' for col in col_ls[5:]]
-    mean_df = valid_df[col_ls[5:]].mean()
-    for col, mean_col in zip(col_ls[5:], mean_col_ls):
+    station_df = valid_df[col_ls[:3]].iloc[0]
+    mean_col_ls = [f'{col}_mean' for col in col_ls[4:]]
+    mean_df = valid_df[col_ls[4:]].mean()
+    for col, mean_col in zip(col_ls[4:], mean_col_ls):
         station_df[mean_col] = mean_df[col]
-    # # mean post 2000
-    # mean_col_2000_ls = [f'{col}_mean_post_2000' for col in col_ls[5:]]
-    # valid_2000_df = valid_df[valid_df['year'] >= 2000]
-    # mean_2000_df = valid_2000_df[col_ls[5:]].mean()
-    # for col, mean_col in zip(col_ls[5:], mean_col_2000_ls):
-    # station_df[mean_col] = mean_2000_df[col]
     # calculate trend
-    trend_col_ls = [f'{col}_trend' for col in col_ls[5:]]
-    p_col_ls = [f'{col}_p_value' for col in col_ls[5:]]
-    # trend_col_2000_ls = [f'{col}_trend_post_2000' for col in col_ls[5:]]
-    # p_col_2000_ls = [f'{col}_p_value_post_2000' for col in col_ls[5:]]
-    # for i, (col, col_trend, col_p, col_trend_2000, col_p_2000) in enumerate(
-    #         zip(col_ls[5:], trend_col_ls, p_col_ls, trend_col_2000_ls, p_col_2000_ls)):
+    trend_col_ls = [f'{col}_trend' for col in col_ls[4:]]
+    p_col_ls = [f'{col}_p_value' for col in col_ls[4:]]
     for i, (col, col_trend, col_p) in enumerate(
-            zip(col_ls[5:], trend_col_ls, p_col_ls)):
+            zip(col_ls[4:], trend_col_ls, p_col_ls)):
         col_df = valid_df[['year', col]]
         if len(col_df) < 2:
             station_df[col_trend] = np.nan
@@ -141,22 +126,9 @@ def calculate_mean_trend(df):
             slope, _, _, p_value, _ = linregress(col_df['year'], col_df[col])
             station_df[col_trend] = slope
             station_df[col_p] = p_value
-        except Exception as e:
+        except:
             station_df[col_trend] = np.nan
             station_df[col_p] = np.nan
-
-        # # trend of post 2000
-        # col_2000_df = col_df[col_df['year'] >= 2000]
-        # if len(col_2000_df) < 2:
-        #     station_df[col_trend_2000] = np.nan
-        #     station_df[col_p_2000] = np.nan
-        # try:
-        #     slope, _, _, p_value, _ = linregress(col_2000_df['year'], col_2000_df[col])
-        #     station_df[col_trend_2000] = slope
-        #     station_df[col_p_2000] = p_value
-        # except Exception as e:
-        #     station_df[col_trend_2000] = np.nan
-        #     station_df[col_p_2000] = np.nan
 
     return pd.DataFrame(station_df).T
 
@@ -182,7 +154,7 @@ def main():
     print('COMPLETE calculating mean and trend for each station')
 
     all_result_df = pd.concat(all_result, ignore_index=True)
-    global_df = all_result_df.iloc[:, 4:].groupby('year').mean()
+    global_df = all_result_df.iloc[:, 3:].groupby('year').mean()
     global_df.to_csv(OUT_DIR_MEAN_TREND_GLOBAL, index=True)
     print('COMPLETE calculating mean and trend at global scale')
 

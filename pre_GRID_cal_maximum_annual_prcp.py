@@ -3,6 +3,7 @@ import xarray as xr
 import os
 import pandas as pd
 import numpy as np
+import time
 import gc
 import re
 from multiprocessing import Pool, cpu_count
@@ -37,6 +38,7 @@ def process_file(nc_file):
         prcp = ds['pr'] * 86400  # convet unit to mm day-1
     else:
         raise KeyError("Dataset does not contain 'tp' or 'pre' variable")
+    prcp = xr.where(prcp < 0.1, 0, prcp)
     prcp = prcp.where(prcp >= 0, np.nan)
     valid_mask = prcp.count(dim='time')
     total_count = len(prcp['time'])
@@ -45,7 +47,7 @@ def process_file(nc_file):
     annual_prcp = annual_prcp.where(valid_mask)
     max_prcp = annual_prcp.max().item()
 
-    print(f"Finished year {year}, maximum annual precipitation {max_prcp} mm")
+    print(f"Finished year {year}, maximum annual precipitation {max_prcp:.2f} mm")
 
     del ds, prcp, valid_mask, annual_prcp
     gc.collect()
@@ -92,10 +94,6 @@ def compute_max_precipitation(data_folder, dataname, num_processes=10):
 if __name__ == "__main__":
     t1 = time.time()
     
-    # ERA5_Land
-    data_folder = r'/data1/share/ERA5_land/precipitation/daily/'
-    compute_max_precipitation(data_folder, 'ERA5_Land', num_processes=3)
-    
     # CMIP6 models
     data_dir = r'/data1/jzzhou/precipitation/season/cmip6/'
     for model in model_ls:
@@ -104,7 +102,11 @@ if __name__ == "__main__":
 
     # CRU JRA
     data_folder = r'/data1/yyzhao/data/CRU-JRA/pre/'
-    compute_max_precipitation(data_folder, 'CRU_JRA', num_processes=10)
+    compute_max_precipitation(data_folder, 'CRU_JRA', num_processes=21)
+    
+    # ERA5_Land
+    data_folder = r'/data1/share/ERA5_land/precipitation/daily/'
+    compute_max_precipitation(data_folder, 'ERA5_Land', num_processes=4)
     
     t2 = time.time()
     running_time = t2 - t1

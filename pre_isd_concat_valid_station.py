@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Fayong Liu
 # 4/8/2025
-# Code for concatenating valid stations at different years and preprocess
+# Code for concatenating valid ISD stations at different years and preprocess
 # For precipitation, PRCP
 # 1. PRCP != 99.99, PRCP_ATTRIBUTES in [D, F, G]
 # 2. convert unit, current unit (inch), 1 inch = 25.4 mm
@@ -27,7 +27,7 @@ def preprocess_station(station):
         filename = os.path.join(DATA_DIR, str(int(year)), station)
         if os.path.exists(filename):
             data = pd.read_csv(
-                filename, usecols=['STATION', 'DATE', 'LATITUDE', 'LONGITUDE', 'NAME', 'PRCP', 'PRCP_ATTRIBUTES']
+                filename, usecols=['STATION', 'DATE', 'LATITUDE', 'LONGITUDE', 'PRCP', 'PRCP_ATTRIBUTES']
             )
             data_ls.append(data)
     df = pd.concat(data_ls, axis=0, ignore_index=True)
@@ -50,7 +50,8 @@ def preprocess_station(station):
     df_valid = df_valid[df_valid['year'].isin(valid_years)]
 
     outname = os.path.join(OUT_DIR, station)
-    df_valid.to_csv(outname, index=False)
+    valid_col = ['STATION', 'DATE', 'LATITUDE', 'LONGITUDE', 'PRCP', 'year']
+    df_valid[valid_col].to_csv(outname, index=False)
     print(outname)
 
     return

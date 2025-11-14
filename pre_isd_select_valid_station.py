@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Fayong Liu
 # 4/8/2025
-# Code for counting and selecting the valid station
+# Code for counting and selecting the valid station in ISD
 # standard
 # valid day: PRCP >= 0, PRCP != 99.99, PRCP_ATTRIBUTES in [D, F, G], valid date
 # valid year: valid day >= 0.75 * total day
-# valid station: 2000-2020, valid year >= 15
+# valid station: 2000-2020, valid year >= 15 and 1980-2020, valid year >= 30
 # finally total 2427 valid stations
 
 
