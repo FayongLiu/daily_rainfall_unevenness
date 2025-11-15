@@ -5,8 +5,8 @@
 # standard
 # valid day: PRCP >= 0, PRCP != 99.99, PRCP_ATTRIBUTES in [D, F, G], valid date
 # valid year: valid day >= 0.75 * total day
-# valid station: 2000-2020, valid year >= 15 and 1980-2020, valid year >= 30
-# finally total 2427 valid stations
+# valid station: 2000-2020, valid year >= 15 or 1980-2020, valid year >= 30, respectively
+# finally total 2427 and 633 valid stations, respectively
 
 
 import os
@@ -20,9 +20,9 @@ import time
 DATA_DIR = r'/data1/zxy/sudden_temp_change/ISD-global-daily/unzip/'
 OUT_DIR = r'../data/isd_valid_stations'
 os.makedirs(OUT_DIR, exist_ok=True)
-START_YEAR = 2000
+START_YEAR = 1980
 END_YEAR = 2020
-TH_YEAR = 15
+TH_YEAR = 30
 
 
 # def a function to cal the total days of a year

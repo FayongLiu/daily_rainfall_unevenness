@@ -5,7 +5,8 @@
 # standard
 # valid day: PRCP >= 0
 # valid year: valid day >= 0.75 * total day
-# valid station: 2000-2020, valid year >= 15 and 1980-2020, valid year >= 30
+# valid station: 2000-2020, valid year >= 15 or 1980-2020, valid year >= 30, respectively
+# finally total 2396 and 2357 valid stations, respectively
 
 
 import os
