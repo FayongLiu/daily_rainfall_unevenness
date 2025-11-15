@@ -119,7 +119,7 @@ def plot_cmip6(ds_ls, area_ds, station_ds, varname):
     cbar.set_label(label, fontsize=12)
 
     # save result
-    outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/{outname}_CMIP6_averaged_by_stations.png'
+    outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/{outname}_CMIP6_stations.png'
     plt.savefig(outpath, dpi=300)
     print(f'Saving {outpath}')
     plt.close()
@@ -133,7 +133,7 @@ def main():
     area_ds = xr.open_dataset(area_path)['area']
     station_path = rf'../data/mask/station_mask_{START_YEAR}_{END_YEAR}_gte{TH_YEAR}_CRU_JRA.nc'
     station_ds = xr.open_dataset(station_path)['station']
-    varnames = ['S', 'D', 'PRCP_ratio', 'rain_day', 'rain_day_0p1']
+    varnames = ['S', 'D', 'PRCP_ratio', 'rain_day']
     varname_ls = []
     for i, varname in enumerate(varnames):
         for idx in ['mean', 'trend']:
@@ -144,7 +144,7 @@ def main():
             else:
                 tempt = f'{varname}_{idx}'
                 varname_ls.append(tempt)
-    for varname in varname_ls:#['S_daily_mean', 'S_daily_trend']
+    for varname in varname_ls:
         plot_cmip6(ds_ls, area_ds, station_ds, varname)
 
     return

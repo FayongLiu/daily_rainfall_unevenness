@@ -348,26 +348,6 @@ def main():
     cbar_prop = [0.06, 0.02]
     plot_mean_trend_rain_day_isd(isd, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
 
-    # daily scale, rainy day, > 0.1 mm
-    varname_ls = ['rain_day_0p1_mean', 'rain_day_0p1_trend']
-    outpath = rf'../fig/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/mean_trend_rain_day_0p1_isd.png'
-    plot_mean_trend_rain_day_isd(isd, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
-    # varname_ls = ['rain_day_mean', 'rain_day_trend',
-    #               'rain_day_mean_post_2000', 'rain_day_trend_post_2000']
-    # fignum_ls = ['(a) Mean rainy days (ISD, 1980-2020)',
-    #              '(c) Trend of rainy days (ISD, 1980-2020)',
-    #              '(b) Mean rainy days (ISD, 2000-2020)',
-    #              '(d) Trend of rainy days (ISD, 2000-2020)', ]
-    # outpath = r'../fig/mean_trend_rain_day_isd.png'
-    # cbar_prop = [0.06, 0.02]
-    # plot_mean_trend_rain_day_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
-    #
-    # # daily scale, rainy day, > 0.1 mm
-    # varname_ls = ['rain_day_0p1_mean', 'rain_day_0p1_trend',
-    #               'rain_day_0p1_mean_post_2000', 'rain_day_0p1_trend_post_2000']
-    # outpath = r'../fig/mean_trend_rain_day_0p1_isd.png'
-    # plot_mean_trend_rain_day_isd(df, varname_ls, fignum_ls, gdf, outpath, cbar_prop)
-
     return
 
 

@@ -104,7 +104,7 @@ def cal_global_averages_each_year(this_year_path, area_mask, station_mask, ref_d
     result['year'] = year
 
     # List of variables to calculate weighted averages
-    variables = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day', 'rain_day_0p1']
+    variables = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day']
     for var_name in variables:
         var_ds = year_ds[var_name]
         weighted_avg = var_ds.weighted(area_mask).mean(skipna=True).item()

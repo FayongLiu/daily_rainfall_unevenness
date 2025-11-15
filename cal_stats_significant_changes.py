@@ -86,7 +86,7 @@ def cal_stats_sig_grid(data_name, varname_ls):
 def main():
     # isd
     isd_path = rf'../data/mean_trend/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/station_isd.csv'
-    varname_ls = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day', 'rain_day_0p1']
+    varname_ls = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day']
     df_ls = []
     for varname in varname_ls:
         result_df = cal_stats_sig_isd(isd_path, varname)

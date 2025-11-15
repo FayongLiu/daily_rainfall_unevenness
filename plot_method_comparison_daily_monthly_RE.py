@@ -169,7 +169,7 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
     ax2 = plt.subplot(grid[0, 3])
     ax_ls = [ax1, ax2]
     colors = ['#9CB0C3', '#EAB080']
-    fignums = ['(a) Daily (D)', '(b) Monyhly (M)']
+    fignums = ['(a) Daily (D)', '(b) Monthly (M)']
     width = 0.5
     for i in range(len(re_ls)):
         axname = ax_ls[i]

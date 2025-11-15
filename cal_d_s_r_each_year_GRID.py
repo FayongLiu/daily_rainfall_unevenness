@@ -166,6 +166,10 @@ def process_files_in_parallel(input_dir, dataname, num_workers=10):
 # Main function
 if __name__ == "__main__":
     t1 = time.time()
+    
+    # ERA5_Land
+    input_dir = r"/data1/share/ERA5_land/precipitation/daily/"
+    process_files_in_parallel(input_dir, 'ERA5_Land', num_workers=3)
 
     # CMIP6 models
     data_dir = r'/data1/jzzhou/precipitation/season/cmip6/'
@@ -176,10 +180,6 @@ if __name__ == "__main__":
     # CRU JRA
     input_dir = r"/data1/yyzhao/data/CRU-JRA/pre/"
     process_files_in_parallel(input_dir, 'CRU_JRA', num_workers=21)
-
-    # ERA5_Land
-    input_dir = r"/data1/share/ERA5_land/precipitation/daily/"
-    process_files_in_parallel(input_dir, 'ERA5_Land', num_workers=4)
 
     t2 = time.time()
     running_time = t2 - t1

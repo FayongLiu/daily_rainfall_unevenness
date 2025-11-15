@@ -48,7 +48,7 @@ def cal_mean_trend_GRID(data_name):
         all_ds = all_ds.interp_like(template, method='linear')
         all_ds = all_ds.where(~np.isnan(ref_ds))
 
-    varname_ls = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day', 'rain_day_0p1']
+    varname_ls = ['S_daily', 'S_monthly', 'D_daily', 'D_monthly', 'PRCP_ratio', 'rain_day']
     mean_trend = {}
     for varname in varname_ls:
         print(f'Calculate mean and trend of {varname}')
@@ -73,25 +73,6 @@ def cal_mean_trend_GRID(data_name):
         mean_trend[f'{varname}_mean'] = mean.where(valid_mask)
         mean_trend[f'{varname}_trend'] = slope.where(valid_mask)
         mean_trend[f'{varname}_p_value'] = p_value.where(valid_mask)
-
-        # # 2000-2020
-        # var_ds = var_ds.sel(time=slice(2000, 2020))
-        # mean = var_ds.mean(dim='time', skipna=True)
-        # x_values = var_ds['time'].values
-        # result = xr.apply_ufunc(
-        #     linear_fit,
-        #     var_ds,
-        #     input_core_dims=[['time']],
-        #     output_core_dims=[[], []],
-        #     vectorize=True,
-        #     dask='parallelized',
-        #     output_dtypes=[float, float],
-        #     kwargs={'x_values': x_values}
-        # )
-        # slope, p_value = result[0], result[1]
-        # mean_trend[f'{varname}_mean_post_2000'] = mean
-        # mean_trend[f'{varname}_trend_post_2000'] = slope
-        # mean_trend[f'{varname}_p_value_post_2000'] = p_value
 
         del var_ds, valid_mask, mean, result, slope, p_value
         gc.collect()

@@ -67,6 +67,16 @@ def plot_stats_combined(df_ls, varname_ls, fignum_ls, key):
                 wspace=0
             )
             axes = axes.flatten()
+        elif num_panel == 2:
+            plt.subplots_adjust(
+                left=0.09,
+                right=0.98,
+                top=0.96,
+                bottom=0.05,
+                hspace=0.24,
+                wspace=0
+            )
+            axes = axes.flatten()
         elif num_panel == 1:
             plt.subplots_adjust(
                 left=0.08,
@@ -109,22 +119,20 @@ def main():
              data_name in dataname_ls]
     # daily scale
     varname_ls = ['S_daily', 'D_daily', 'PRCP_ratio']
-    fignum_ls = ['(a) Daily UI', '(b) Daily RE', '(c) Daily R/Rmax']
+    fignum_ls = ['(a) Daily UI', '(b) Daily RE', '(c) R/Rmax']
     key = 'S_D_PRCP_ratio_daily'
     plot_stats_combined(df_ls, varname_ls, fignum_ls, key)
 
     # monthly scale
-    varname_ls = [varname.replace('daily', 'monthly') for varname in varname_ls]
-    fignum_ls = [fignum.replace('Daily', 'Monthly') for fignum in fignum_ls]
+    varname_ls = [varname.replace('daily', 'monthly') for varname in varname_ls[:2]]
+    fignum_ls = [fignum.replace('Daily', 'Monthly') for fignum in fignum_ls[:2]]
     key = 'S_D_PRCP_ratio_monthly'
     plot_stats_combined(df_ls, varname_ls, fignum_ls, key)
 
     # rainy days
-    key_ls = ['rain_day', 'rain_day_0p1']
-    for key in key_ls:
-        varname_ls = [key]
-        fignum_ls = ['']
-        plot_stats_combined(df_ls, varname_ls, fignum_ls, key)
+    varname_ls = ['rain_day']
+    fignum_ls = ['']
+    plot_stats_combined(df_ls, varname_ls, fignum_ls, key)
 
     return
 

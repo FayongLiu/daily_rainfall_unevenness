@@ -106,7 +106,7 @@ if __name__ == "__main__":
     
     # ERA5_Land
     data_folder = r'/data1/share/ERA5_land/precipitation/daily/'
-    compute_max_precipitation(data_folder, 'ERA5_Land', num_processes=4)
+    compute_max_precipitation(data_folder, 'ERA5_Land', num_processes=3)
     
     t2 = time.time()
     running_time = t2 - t1
