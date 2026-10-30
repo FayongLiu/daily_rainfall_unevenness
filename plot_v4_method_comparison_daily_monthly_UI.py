@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
+# Code for comparing daily and monthly unevenness index (UI)
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import numpy as np
 import os
 import time
-from plot_mean_trend_isd import add_fignum
-from plot_method_comparison_SD_RE_UI import cal_stats
+from rainfall_ui.util.visualization import add_fignum
+from plot_v4_method_comparison_SD_DSI import cal_stats
 
 
 # function to generate 12 hypothetical precipitation distribution (3 monthly and 9 daily)
-def generate_prcp_distribution():
+def generate_rainfall_distribution():
     monthly_prcp = {}
     daily_prcp = {}
 
@@ -76,7 +76,7 @@ def generate_prcp_distribution():
 
 
 # function to plot daily precipitation distribution
-def plot_daily_prcp_distribution(axname, daily_prcp, fignum):
+def plot_daily_rainfall_distribution(axname, daily_prcp, fignum):
     # plot
     x = np.arange(1, 361)
     axname.plot(x, daily_prcp, color="#9CB0C3", linewidth=1, alpha=0.8)
@@ -84,7 +84,7 @@ def plot_daily_prcp_distribution(axname, daily_prcp, fignum):
     for i in range(30, 360, 30):
         axname.axvline(i, color="gray", linestyle="--", linewidth=0.5, alpha=0.5)
     axname.set_xlim(0, 361)
-    axname.set_ylabel("Precipitation (mm)")
+    axname.set_ylabel("Rainfall (mm)")
     axname.set_xlabel("Day of year")
     axname.set_xticks([])
     add_fignum(axname, fignum)
@@ -93,12 +93,12 @@ def plot_daily_prcp_distribution(axname, daily_prcp, fignum):
 
 
 # function to plot monthly precipitation distribution
-def plot_monthly_prcp_distribution(axname, monthly_prcp, fignum):
+def plot_monthly_rainfall_distribution(axname, monthly_prcp, fignum):
     # plot
     x = np.arange(1, 13)
     axname.bar(x, monthly_prcp, width=0.5, color="#9CB0C3", alpha=0.8)
     axname.set_xlim(0, 13)
-    axname.set_ylabel("Precipitation (mm)")
+    axname.set_ylabel("Rainfall (mm)")
     axname.set_xlabel('')
     axname.set_xticks(x)
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -109,13 +109,14 @@ def plot_monthly_prcp_distribution(axname, monthly_prcp, fignum):
 
 
 # function to plot combined figure of daily and monthly precipitation distribution
-def plot_combined_prcp_distribution(monthly_prcp, daily_prcp):
+def plot_combined_rainfall_distribution(monthly_prcp, daily_prcp):
     monthly_keys = ['u', 'con', 'cyc']
-    monthly_fignums = ['(a) uM', '(b) conM', '(c) cycM']
+    monthly_fignums = ['a', 'b', 'c'] # ['(a) uM', '(b) conM', '(c) cycM']
     daily_keys = ['u_u', 'u_con', 'u_cyc', 'con_u', 'con_con', 'con_cyc', 'cyc_u', 'cyc_con', 'cyc_cyc']
-    daily_fignums = ['(d) uM and uD', '(e) uM and conD', '(f) uM and cycD',
-                     '(g) conM and uD', '(h) conM and conD', '(i) conM and cycD',
-                     '(j) cycM and uD', '(k) cycM and conD', '(l) cycM and cycD']
+    daily_fignums = ['d', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l']
+    # daily_fignums = ['(d) uM and uD', '(e) uM and conD', '(f) uM and cycD',
+    #                  '(g) conM and uD', '(h) conM and conD', '(i) conM and cycD',
+    #                  '(j) cycM and uD', '(k) cycM and conD', '(l) cycM and cycD']
     fig, axes = plt.subplots(4, 3, figsize=(18, 12))
     plt.subplots_adjust(
         left=0.09,
@@ -129,13 +130,13 @@ def plot_combined_prcp_distribution(monthly_prcp, daily_prcp):
         axname = axes[i//3, i%3]
         if i <= 2:
             # mothly
-            plot_monthly_prcp_distribution(axname, monthly_prcp[monthly_keys[i]], monthly_fignums[i])
+            plot_monthly_rainfall_distribution(axname, monthly_prcp[monthly_keys[i]], monthly_fignums[i])
         else:
             # daily scale
-            plot_daily_prcp_distribution(axname, daily_prcp[daily_keys[i-3]], daily_fignums[i-3])
+            plot_daily_rainfall_distribution(axname, daily_prcp[daily_keys[i-3]], daily_fignums[i-3])
 
     # save result
-    outpath = r'../fig/method_comparison_daily_monthly_prcp_distribution.png'
+    outpath = r'../fig_v4/method_comparison_daily_monthly_rainfall_distribution.png'
     os.makedirs(os.path.dirname(outpath), exist_ok=True)
     plt.savefig(outpath, dpi=300, bbox_inches='tight')
     plt.close()
@@ -144,8 +145,8 @@ def plot_combined_prcp_distribution(monthly_prcp, daily_prcp):
     return
 
 
-# function to plot daily and monthly precipitation RE
-def plot_combined_RE(monthly_prcp, daily_prcp):
+# function to plot daily and monthly precipitation UI
+def plot_combined_UI(monthly_prcp, daily_prcp):
     # cal stats
     monthly_re = []
     daily_re = []
@@ -154,12 +155,12 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
     Rmax = 1080
     for key in monthly_keys:
         prcp = monthly_prcp[key]
-        _, _, RE, _ = cal_stats(prcp, Rmax)
-        monthly_re.append(RE)
+        _, _, _, _, UI = cal_stats(prcp, Rmax)
+        monthly_re.append(UI)
     for key in daily_keys:
         prcp = daily_prcp[key]
-        _, _, RE, _ = cal_stats(prcp, Rmax)
-        daily_re.append(RE)
+        _, _, _, _, UI = cal_stats(prcp, Rmax)
+        daily_re.append(UI)
     re_ls = [daily_re, monthly_re]
 
     # plot
@@ -169,7 +170,7 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
     ax2 = plt.subplot(grid[0, 3])
     ax_ls = [ax1, ax2]
     colors = ['#9CB0C3', '#EAB080']
-    fignums = ['(a) Daily (D)', '(b) Monthly (M)']
+    fignums = ['a', 'b']#['(a) Daily (D)', '(b) Monthly (M)']
     width = 0.5
     for i in range(len(re_ls)):
         axname = ax_ls[i]
@@ -179,15 +180,18 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
         for j in range(len(prcp)):
             axname.text(j+1, prcp[j], f'{prcp[j]:.2f}', va='bottom', ha='center')
         axname.set_xlim(0.5, len(prcp)+0.5)
+        if i == 0:
+            axname.set_xticks([1, 2, 3, 4, 5, 6, 7, 8, 9])
+            axname.set_xticklabels(['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'])
 
     # add legend annotations to ax1
     pattern_labels = [
-        '1: uM and uD', '2: uM and conD', '3: uM and cycD',
-        '4: conM and uD', '5: conM and conD', '6: conM and cycD',
-        '7: cycM and uD', '8: cycM and conD', '9: cycM and cycD'
+        'S1: uM and uD', 'S2: uM and conD', 'S3: uM and cycD',
+        'S4: conM and uD', 'S5: conM and conD', 'S6: conM and cycD',
+        'S7: cycM and uD', 'S8: cycM and conD', 'S9: cycM and cycD'
     ]
     ax1.text(0.6, 6.5, '\n'.join(pattern_labels), va='bottom', ha='left')
-    ax1.set_ylabel('Relative entropy (RE)')
+    ax1.set_ylabel('Rainfall unevenness index')
     add_fignum(ax1, fignums[0])
     # adjust ax2 ylim
     ylim = ax1.get_ylim()
@@ -198,7 +202,7 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
     ax2.set_xticklabels(['U', 'Con', 'Cyc'])
 
     #save result
-    outpath = r'../fig/method_comparison_daily_monthly_prcp_RE.png'
+    outpath = r'../fig_v4/method_comparison_daily_monthly_UI.png'
     os.makedirs(os.path.dirname(outpath), exist_ok=True)
     plt.savefig(outpath, dpi=300, bbox_inches='tight')
     plt.close()
@@ -209,11 +213,11 @@ def plot_combined_RE(monthly_prcp, daily_prcp):
 
 def main():
     # plot daily and monthly prcp distribution
-    monthly_prcp, daily_prcp = generate_prcp_distribution()
-    plot_combined_prcp_distribution(monthly_prcp, daily_prcp)
+    monthly_prcp, daily_prcp = generate_rainfall_distribution()
+    plot_combined_rainfall_distribution(monthly_prcp, daily_prcp)
 
     # plot daily and monthly prcp RE
-    plot_combined_RE(monthly_prcp, daily_prcp)
+    plot_combined_UI(monthly_prcp, daily_prcp)
 
     return
 
