@@ -10,7 +10,7 @@ import statsmodels.api as sm
 import time
 import os
 from rainfall_ui.util.config import parse_args
-from rainfall_ui.util.visualization import add_fignum, rename, get_alpha_label, cool
+from rainfall_ui.util.visualization import add_fignum, get_alpha_label, cool
 from rainfall_ui.util.datainfo import CATEGORY_NAMES, CATEGORY_LS_80, CATEGORY_LS_50
 
 args = parse_args()
@@ -23,42 +23,29 @@ CATEGORY_LS = CATEGORY_LS_80 if START_YEAR >= 1980 else CATEGORY_LS_50
 
 
 # function to plot mean and trend by category
-def plot_mean_trend_category_relationship(ds_ls, gauge_df, varname, bins=20):
+def plot_mean_trend_category_relationship(ds_ls, gauge_df, xname, yname, xlab, ylab, unit_slope, bins=20):
     ftsz = 10
-    varname_lab = rename(varname)
-    varname_mean = f'{varname}_mean'
-    varname_trend = f'{varname}_trend'
+    
     clr_scatter = cool[0]
     clr_bin = cool[3]
     clr_line = cool[4]
     
     # load data
-    if 'rain_day' in varname:
-        trend_ds_ls = [ds[varname_trend] for ds in ds_ls]
-        trend_df = gauge_df[varname_trend]
-        lab_mean = f'Multi-year mean of {varname_lab} (day)'
-        lab_trend = f'Trend of {varname_lab} (day yr$^-$$^1$)'
-        unit_slope = 'yr$^-$$^1$'
-    elif 'STD_' in varname:
-        trend_ds_ls = [ds[varname_trend] * 10 for ds in ds_ls]
-        trend_df = gauge_df[varname_trend] * 10
-        lab_mean = f'Multi-year mean of {varname_lab} (mm)'
-        lab_trend = f'Trend of {varname_lab} (mm decade$^-$$^1$)'
-        unit_slope = 'decade$^-$$^1$'
+    if 'trend' in xname:
+        x_ds_ls = [ds[xname] * 1000 for ds in ds_ls]
+        x_df = gauge_df[xname] * 1000
     else:
-        trend_ds_ls = [ds[varname_trend] * 1000 for ds in ds_ls]
-        trend_df = gauge_df[varname_trend] * 1000
-        if varname_lab == 'R/Rmax':
-            lab_mean = 'Multi-year mean of $R$/$R$$_{max}$'
-            lab_trend = 'Trend of $R$/$R$$_{max}$ (kyr$^-$$^1$)'
-        else:
-            lab_mean = f'Multi-year mean of {varname_lab}'
-            lab_trend = f'Trend of {varname_lab} (kyr$^-$$^1$)'
-        unit_slope = 'kyr$^-$$^1$'
-    mean_ds_ls = [ds[varname_mean] for ds in ds_ls]
-    mean_df = gauge_df[varname_mean]
-    new_ds_ls = [mean_ds_ls, trend_ds_ls]
-    df_ls = [mean_df, trend_df]
+        x_ds_ls = [ds[xname] for ds in ds_ls]
+        x_df = gauge_df[xname]
+    if 'trend' in yname:
+        y_ds_ls = [ds[yname] * 1000 for ds in ds_ls]
+        y_df = gauge_df[yname] * 1000
+    else:
+        y_ds_ls = [ds[yname] for ds in ds_ls]
+        y_df = gauge_df[yname]
+  
+    new_ds_ls = [x_ds_ls, y_ds_ls]
+    df_ls = [x_df, y_df]
 
     # plot distribution
     fig, axes = plt.subplots(2, 2, figsize=(8, 8), dpi=300)
@@ -75,25 +62,20 @@ def plot_mean_trend_category_relationship(ds_ls, gauge_df, varname, bins=20):
     for i in range(4):
         axname = axes[i]
         if i == 0:
-            mean_value = df_ls[0]
-            trend_value = df_ls[1]
+            xvalue = df_ls[0]
+            yvalue = df_ls[1]
         else:
-            mean_value = new_ds_ls[0][i].sel(lat=slice(-60, 90)).values.flatten()
-            trend_value = new_ds_ls[1][i].sel(lat=slice(-60, 90)).values.flatten()
+            xvalue = new_ds_ls[0][i].sel(lat=slice(-60, 90)).values.flatten()
+            yvalue = new_ds_ls[1][i].sel(lat=slice(-60, 90)).values.flatten()
         # remove nan values
-        if varname in ['S_daily', 'PRCP_ratio']:
-            valid_mask = ~np.isnan(mean_value) & ~np.isnan(trend_value)
-        elif varname == 'S_monthly':
-            valid_mask = ~np.isnan(mean_value) & ~np.isnan(trend_value)
-        else:
-            valid_mask = ~np.isnan(mean_value) & ~np.isnan(trend_value)
+        valid_mask = ~np.isnan(xvalue) & ~np.isnan(yvalue)
         
-        mean_value = mean_value[valid_mask]
-        trend_value = trend_value[valid_mask]
+        xvalue = xvalue[valid_mask]
+        yvalue = yvalue[valid_mask]
 
         # weighted least squares
-        q = min(bins, len(pd.qcut(mean_value, bins, duplicates='drop').unique()))
-        df = pd.DataFrame({'x': mean_value, 'y': trend_value})
+        q = min(bins, len(pd.qcut(xvalue, bins, duplicates='drop').unique()))
+        df = pd.DataFrame({'x': xvalue, 'y': yvalue})
         df['bin'] = pd.qcut(df['x'], q=q, duplicates='drop')
         binned = (
             df.groupby('bin', observed=True)
@@ -114,13 +96,13 @@ def plot_mean_trend_category_relationship(ds_ls, gauge_df, varname, bins=20):
         p_value = wls_b.pvalues['x_median']
 
         # scatter
-        axname.scatter(mean_value, trend_value, s=3, color=clr_scatter, alpha=0.1, edgecolors='none', rasterized=True)
+        axname.scatter(xvalue, yvalue, s=3, color=clr_scatter, alpha=0.1, edgecolors='none', rasterized=True)
         # box median, 25%, 75% for each bin
         err = axname.errorbar(binned['x_median'], binned['y_median'], yerr=[binned['y_median'] - binned['y_q25'], binned['y_q75'] - binned['y_median']],
               fmt='none', ecolor=clr_bin, elinewidth=1.0, capsize=2)
         median = axname.scatter(binned['x_median'], binned['y_median'], s=20, facecolor=clr_bin, edgecolor='white', linewidth=1.0)
         # regression line for binned WLS
-        x_grid = np.linspace(mean_value.min(), mean_value.max(), 200)
+        x_grid = np.linspace(xvalue.min(), xvalue.max(), 200)
         y_grid = wls_b.params['const'] + slope * x_grid
         wls, = axname.plot(x_grid, y_grid, color=clr_line, linewidth=2.0, linestyle='--', alpha=0.9)
 
@@ -137,26 +119,33 @@ def plot_mean_trend_category_relationship(ds_ls, gauge_df, varname, bins=20):
         # add ticks
         axname.xaxis.set_major_locator(ticker.MaxNLocator(nbins=5, prune='both'))
         axname.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5, prune='both'))
-        axname.set_xlabel(lab_mean, fontsize=ftsz)
-        axname.set_ylabel(lab_trend, fontsize=ftsz)
+        axname.set_xlabel(xlab, fontsize=ftsz)
+        axname.set_ylabel(ylab, fontsize=ftsz)
         axname.tick_params(axis='both', which='major', labelsize=ftsz)
         # add slope and p value
         if p_value < 0.01:
-            txt = f'n = {len(mean_value)}\nSlope = {slope:.2f} {unit_slope}\n$P$ < 0.01'
+            txt = f'n = {len(xvalue)}\nSlope = {slope:.2f} {unit_slope}\n$P$ < 0.01'
         else:
-            txt = f'n = {len(mean_value)}\nSlope = {slope:.2f} {unit_slope}\n$P$ = {p_value:.2f}'
-        if varname == 'D_daily':
-            axname.text(0.02, 0.01, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
-        elif varname == 'S_daily':
+            txt = f'n = {len(xvalue)}\nSlope = {slope:.2f} {unit_slope}\n$P$ = {p_value:.2f}'
+        if yname == 'S_daily_trend':
             if i in [0, 1, 2]:
                 axname.text(0.02, 0.01, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
             else:
                 axname.text(0.02, 0.85, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
-        else:
-            if i in [0, 2, 3]:
+        elif yname == 'D_daily_trend':
+            axname.text(0.99, 0.01, txt, va='bottom', ha='right', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
+        elif yname == 'PRCP_ratio_trend':
+            if i in [0, 3]:
                 axname.text(0.02, 0.01, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
             else:
-                axname.text(0.55, 0.01, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
+                axname.text(0.02, 0.85, txt, va='bottom', ha='left', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
+        elif yname == 'D_daily_mean':
+            if i == 0:
+                axname.text(0.99, 0.01, txt, va='bottom', ha='right', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
+            else:
+                axname.text(0.99, 0.85, txt, va='bottom', ha='right', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
+        elif yname == 'PRCP_ratio_mean':
+            axname.text(0.99, 0.01, txt, va='bottom', ha='right', transform=axname.transAxes, fontsize=ftsz, color=clr_line)
 
         fignum = get_alpha_label(i, with_parenthesis=False)
         add_fignum(axname, fignum, xoffset=-0.2, yoffset=-0.05, ftsz=ftsz+2)
@@ -172,7 +161,7 @@ def plot_mean_trend_category_relationship(ds_ls, gauge_df, varname, bins=20):
             )
     
     # save result
-    outpath = rf'../fig_v4/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/{varname}_mean_trend_categories_relationship_{bins}.png'
+    outpath = rf'../fig_v4/{START_YEAR}_{END_YEAR}_gte{TH_YEAR}/{xname}_{yname}_categories_relationship_{bins}.png'
     plt.savefig(outpath, dpi=300)
     print(f'Saving {outpath}')
     plt.close()
@@ -193,16 +182,26 @@ def main():
         tempt_ds = xr.open_dataset(os.path.join(input_dir_data, f'grid_{model}_ensembles.nc'))
         ds_ls.append(tempt_ds)
 
-    if START_YEAR == 1980:
-        varnames = ['S_daily', 'PRCP_ratio', 'D_daily']#, 'S_monthly']#, 'D_monthly', 'rain_day']#, 'STD_daily_orig', 'STD_daily_detr']
-    else:
-        varnames = ['S_daily']
-    for varname in varnames:
-        if varname == 'S_daily':
-            for bins in [10, 20, 30]:
-                plot_mean_trend_category_relationship(ds_ls, station_csv, varname, bins=bins)
-        else:
-            plot_mean_trend_category_relationship(ds_ls, station_csv, varname)
+    xname = 'S_daily_mean'
+    yname = 'S_daily_trend'
+    xlab = 'Multi-year mean of UI'
+    ylab = 'Trend of UI (kyr$^{-1}$)'
+    unit_slope = 'kyr$^{-1}$'
+    for bins in [10, 20, 30]:
+        plot_mean_trend_category_relationship(ds_ls, station_csv, xname, yname, xlab, ylab, unit_slope, bins=bins)
+    yname = 'D_daily_trend'
+    ylab = 'Trend of RE (kyr$^{-1}$)'
+    plot_mean_trend_category_relationship(ds_ls, station_csv, xname, yname, xlab, ylab, unit_slope)
+    yname = 'PRCP_ratio_trend'
+    ylab = 'Trend of $R$/$R$$_{max}$ (kyr$^{-1}$)'
+    plot_mean_trend_category_relationship(ds_ls, station_csv, xname, yname, xlab, ylab, unit_slope)
+    yname = 'D_daily_mean'
+    ylab = 'Multi-year mean of RE'
+    unit_slope = ''
+    plot_mean_trend_category_relationship(ds_ls, station_csv, xname, yname, xlab, ylab, unit_slope)
+    yname = 'PRCP_ratio_mean'
+    ylab = 'Multi-year mean of $R$/$R$$_{max}$'
+    plot_mean_trend_category_relationship(ds_ls, station_csv, xname, yname, xlab, ylab, unit_slope)
     
     t2 = time.time()
     running_time = t2 - t1
